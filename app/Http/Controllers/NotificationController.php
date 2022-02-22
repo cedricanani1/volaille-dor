@@ -25,7 +25,7 @@ class NotificationController extends Controller
                 return back();
             }
             else{
-                request()->session()->flash('error','Error please try again');
+                request()->session()->flash('error','Error Veuillez réessayer');
                 return back();
             }
         }

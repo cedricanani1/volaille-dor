@@ -29,8 +29,8 @@
             <td>{{$order->first_name}} {{$order->last_name}}</td>
             <td>{{$order->email}}</td>
             <td>{{$order->quantity}}</td>
-            <td>${{number_format($order->delivery_charge,2)}}</td>
-            <td>${{number_format($order->total_amount,2)}}</td>
+            <td>{{number_format($order->delivery_charge,0)}} Fcfa</td>
+            <td>{{number_format($order->total_amount,0)}} Fcfa</td>
             <td>
                 @if($order->status=='new')
                   <span class="badge badge-primary">{{$order->status}}</span>
@@ -54,7 +54,6 @@
         </tr>
       </tbody>
     </table>
-
     <section class="confirmation_part section_padding">
       <div class="order_boxes">
         <div class="row">
@@ -80,11 +79,11 @@
                     </tr>
                     <tr>
                         <td>Shipping Charge</td>
-                        <td> : $ {{number_format($order->delivery_charge,2)}}</td>
+                        <td> : {{number_format($order->delivery_charge,0)}} Fcfa</td>
                     </tr>
                     <tr>
                         <td>Total Amount</td>
-                        <td> : $ {{number_format($order->total_amount,2)}}</td>
+                        <td> : {{number_format($order->total_amount,0)}} Fcfa</td>
                     </tr>
                     <tr>
                         <td>Payment Method</td>

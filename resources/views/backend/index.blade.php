@@ -4,15 +4,23 @@
 <div class="container-fluid">
     @include('backend.layouts.notification')
     <!-- Page Heading -->
+@php
+    $boutique = App\User::findOrFail(Auth()->user()->id)->boutique->last();
+@endphp
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-      <h1 class="h3 mb-0 text-gray-800">Tableau de bord</h1>
+        @if ($boutique)
+            <h1 class="h3 mb-0 text-gray-800">Tableau de bord  <strong>{{$boutique->libelle}}</strong> </h1>
+            @else
+            <h1 class="h3 mb-0 text-gray-800">Tableau de bord </h1>
+        @endif
+
     </div>
 
     <!-- Content Row -->
     <div class="row">
-
+    @role('admin')
       <!-- Category -->
-      <div class="col-xl-3 col-md-6 mb-4">
+      <div class="col-xl-4 col-md-6 mb-4">
         <div class="card border-left-primary shadow h-100 py-2">
           <div class="card-body">
             <div class="row no-gutters align-items-center">
@@ -27,9 +35,10 @@
           </div>
         </div>
       </div>
-
+    @endrole
+    @role('admin')
       <!-- Products -->
-      <div class="col-xl-3 col-md-6 mb-4">
+      <div class="col-xl-4 col-md-6 mb-4">
         <div class="card border-left-success shadow h-100 py-2">
           <div class="card-body">
             <div class="row no-gutters align-items-center">
@@ -44,9 +53,28 @@
           </div>
         </div>
       </div>
-
+    @endrole
+    @role('gerant(e)')
+      <!-- Products -->
+      <div class="col-xl-4 col-md-6 mb-4">
+        <div class="card border-left-success shadow h-100 py-2">
+          <div class="card-body">
+            <div class="row no-gutters align-items-center">
+              <div class="col mr-2">
+                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Produits</div>
+                <div class="h5 mb-0 font-weight-bold text-gray-800">{{\App\Models\Product::countGerantProduct()}}</div>
+              </div>
+              <div class="col-auto">
+                <i class="fas fa-cubes fa-2x text-gray-300"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    @endrole
+      @role('admin')
       <!-- Order -->
-      <div class="col-xl-3 col-md-6 mb-4">
+      <div class="col-xl-4 col-md-6 mb-4">
         <div class="card border-left-info shadow h-100 py-2">
           <div class="card-body">
             <div class="row no-gutters align-items-center">
@@ -66,43 +94,52 @@
           </div>
         </div>
       </div>
-
-      <!--Posts-->
-      <div class="col-xl-3 col-md-6 mb-4">
-        <div class="card border-left-warning shadow h-100 py-2">
+      @endrole
+      @role('gerant(e)')
+      <!-- Order -->
+      <div class="col-xl-4 col-md-6 mb-4">
+        <div class="card border-left-info shadow h-100 py-2">
           <div class="card-body">
             <div class="row no-gutters align-items-center">
               <div class="col mr-2">
-                <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Poste</div>
-                <div class="h5 mb-0 font-weight-bold text-gray-800">{{\App\Models\Post::countActivePost()}}</div>
+                <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Commande</div>
+                <div class="row no-gutters align-items-center">
+                  <div class="col-auto">
+                    <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">{{\App\Models\Order::countGerantOrder()}}</div>
+                  </div>
+
+                </div>
               </div>
               <div class="col-auto">
-                <i class="fas fa-folder fa-2x text-gray-300"></i>
+                <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+      @endrole
+
     <div class="row">
 
-      <!-- Area Chart -->
-      <div class="col-xl-8 col-lg-7">
-        <div class="card shadow mb-4">
-          <!-- Card Header - Dropdown -->
-          <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-            <h6 class="m-0 font-weight-bold text-primary">Aperçu des revenus</h6>
 
-          </div>
-          <!-- Card Body -->
-          <div class="card-body">
-            <div class="chart-area">
-              <canvas id="myAreaChart"></canvas>
+        <!-- Area Chart -->
+        <div class="col-xl-8 col-lg-7">
+            <div class="card shadow mb-4">
+            <!-- Card Header - Dropdown -->
+            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                <h6 class="m-0 font-weight-bold text-primary">Aperçu des revenus</h6>
+
             </div>
-          </div>
+            <!-- Card Body -->
+            <div class="card-body">
+                <div class="chart-area">
+                <canvas id="myAreaChart"></canvas>
+                </div>
+            </div>
+            </div>
         </div>
-      </div>
 
+        {{-- @role('admin') --}}
       <!-- Pie Chart -->
       <div class="col-xl-4 col-lg-5">
         <div class="card shadow mb-4">
@@ -118,7 +155,7 @@
       </div>
     </div>
     <!-- Content Row -->
-
+    {{-- @endrole --}}
   </div>
 @endsection
 
@@ -136,7 +173,7 @@
   {
       var data = google.visualization.arrayToDataTable(analytics);
       var options = {
-          title : 'Last 7 Days registered user'
+          title : 'Utilisateur enregistré les 7 derniers jours'
       };
       var chart = new google.visualization.PieChart(document.getElementById('pie_chart'));
       chart.draw(data, options);
@@ -185,7 +222,7 @@
                   data: {
                     labels: data_keys, // ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
                     datasets: [{
-                      label: "Earnings",
+                      label: "Revenus",
                       lineTension: 0.3,
                       backgroundColor: "rgba(78, 115, 223, 0.05)",
                       borderColor: "rgba(78, 115, 223, 1)",

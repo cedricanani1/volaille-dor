@@ -18,7 +18,7 @@ class ProductReviewController extends Controller
     public function index()
     {
         $reviews=ProductReview::getAllReview();
-        
+
         return view('backend.review.index')->with('reviews',$reviews);
     }
 
@@ -29,7 +29,7 @@ class ProductReviewController extends Controller
      */
     public function create()
     {
-        
+
     }
 
     /**
@@ -64,7 +64,7 @@ class ProductReviewController extends Controller
             request()->session()->flash('success','Thank you for your feedback');
         }
         else{
-            request()->session()->flash('error','Something went wrong! Please try again!!');
+            request()->session()->flash('error','Something went wrong! Veuillez réessayer!!');
         }
         return redirect()->back();
     }
@@ -122,7 +122,7 @@ class ProductReviewController extends Controller
                 request()->session()->flash('success','Review Successfully updated');
             }
             else{
-                request()->session()->flash('error','Something went wrong! Please try again!!');
+                request()->session()->flash('error','Something went wrong! Veuillez réessayer!!');
             }
         }
         else{

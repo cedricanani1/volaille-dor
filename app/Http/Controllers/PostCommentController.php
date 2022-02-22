@@ -59,7 +59,7 @@ class PostCommentController extends Controller
             request()->session()->flash('success','Thank you for your comment');
         }
         else{
-            request()->session()->flash('error','Something went wrong! Please try again!!');
+            request()->session()->flash('error','Something went wrong! Veuillez réessayer!!');
         }
         return redirect()->back();
     }
@@ -111,7 +111,7 @@ class PostCommentController extends Controller
                 request()->session()->flash('success','Comment successfully updated');
             }
             else{
-                request()->session()->flash('error','Something went wrong! Please try again!!');
+                request()->session()->flash('error','Something went wrong! Veuillez réessayer!!');
             }
             return redirect()->route('comment.index');
         }
@@ -137,7 +137,7 @@ class PostCommentController extends Controller
                 request()->session()->flash('success','Post Comment successfully deleted');
             }
             else{
-                request()->session()->flash('error','Error occurred please try again');
+                request()->session()->flash('error','Erreur est survenue Veuillez réessayer');
             }
             return back();
         }

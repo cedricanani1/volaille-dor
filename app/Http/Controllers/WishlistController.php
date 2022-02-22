@@ -15,13 +15,13 @@ class WishlistController extends Controller
     public function wishlist(Request $request){
         // dd($request->all());
         if (empty($request->slug)) {
-            request()->session()->flash('error','Invalid Products');
+            request()->session()->flash('error','Produits invalides');
             return back();
         }        
         $product = Product::where('slug', $request->slug)->first();
         // return $product;
         if (empty($product)) {
-            request()->session()->flash('error','Invalid Products');
+            request()->session()->flash('error','Produits invalides');
             return back();
         }
 
@@ -38,10 +38,10 @@ class WishlistController extends Controller
             $wishlist->price = ($product->price-($product->price*$product->discount)/100);
             $wishlist->quantity = 1;
             $wishlist->amount=$wishlist->price*$wishlist->quantity;
-            if ($wishlist->product->stock < $wishlist->quantity || $wishlist->product->stock <= 0) return back()->with('error','Stock not sufficient!.');
+            if ($wishlist->product->stock < $wishlist->quantity || $wishlist->product->stock <= 0) return back()->with('error','Stock insuffisant!.');
             $wishlist->save();
         }
-        request()->session()->flash('success','Product successfully added to wishlist');
+        request()->session()->flash('success','Produit ajouté avec succès to wishlist');
         return back();       
     }  
     
@@ -52,7 +52,7 @@ class WishlistController extends Controller
             request()->session()->flash('success','Wishlist successfully removed');
             return back();  
         }
-        request()->session()->flash('error','Error please try again');
+        request()->session()->flash('error','Error Veuillez réessayer');
         return back();       
     }     
 }

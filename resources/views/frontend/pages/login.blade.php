@@ -4,7 +4,7 @@
 
 @section('main-content')
     <!-- Breadcrumbs -->
-    <div class="breadcrumbs">
+    {{-- <div class="breadcrumbs">
         <div class="container">
             <div class="row">
                 <div class="col-12">
@@ -17,24 +17,24 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> --}}
     <!-- End Breadcrumbs -->
             
     <!-- Shop Login -->
-    <section class="shop login section">
+    <section class="shop login section py-5">
         <div class="container">
             <div class="row"> 
                 <div class="col-lg-6 offset-lg-3 col-12">
                     <div class="login-form">
                         <h2>Login</h2>
-                        <p>Please register in order to checkout more quickly</p>
+                        <p>Veuillez vous inscrire pour commander plus rapidement</p>
                         <!-- Form -->
                         <form class="form" method="post" action="{{route('login.submit')}}">
                             @csrf
                             <div class="row">
                                 <div class="col-12">
                                     <div class="form-group">
-                                        <label>Your Email<span>*</span></label>
+                                        <label> Email<span>*</span></label>
                                         <input type="email" name="email" placeholder="" required="required" value="{{old('email')}}">
                                         @error('email')
                                             <span class="text-danger">{{$message}}</span>
@@ -43,7 +43,7 @@
                                 </div>
                                 <div class="col-12">
                                     <div class="form-group">
-                                        <label>Your Password<span>*</span></label>
+                                        <label>Mot de passe<span>*</span></label>
                                         <input type="password" name="password" placeholder="" required="required" value="{{old('password')}}">
                                         @error('password')
                                             <span class="text-danger">{{$message}}</span>
@@ -52,12 +52,12 @@
                                 </div>
                                 <div class="col-12">
                                     <div class="form-group login-btn">
-                                        <button class="btn" type="submit">Login</button>
-                                        <a href="{{route('register.form')}}" class="btn">Register</a>
-                                        OR
+                                        <button class="btn" type="submit">Connexion</button>
+                                        <a href="{{route('register.form')}}" class="btn">Inscription</a>
+                                        {{-- OR
                                         <a href="{{route('login.redirect','facebook')}}" class="btn btn-facebook"><i class="ti-facebook"></i></a>
                                         <a href="{{route('login.redirect','github')}}" class="btn btn-github"><i class="ti-github"></i></a>
-                                        <a href="{{route('login.redirect','google')}}" class="btn btn-google"><i class="ti-google"></i></a>
+                                        <a href="{{route('login.redirect','google')}}" class="btn btn-google"><i class="ti-google"></i></a> --}}
 
                                     </div>
                                     <div class="checkbox">

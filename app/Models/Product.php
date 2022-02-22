@@ -4,10 +4,15 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Cart;
+use Illuminate\Support\Facades\Auth;
+
 class Product extends Model
 {
     protected $fillable=['title','slug','summary','description','cat_id','child_cat_id','price','brand_id','discount','status','photo','size','stock','is_featured','condition'];
-
+    public function boutique()
+    {
+        return $this->belongsToMany(Boutique::class,'boutique_products', 'product_id', 'boutique_id')->withPivot('created_at','quantity_init','quantity');
+    }
     public function cat_info(){
         return $this->hasOne('App\Models\Category','id','cat_id');
     }
@@ -33,7 +38,13 @@ class Product extends Model
         }
         return 0;
     }
-
+    public static function countGerantProduct(){
+        $data = Auth::user()->boutique->last()->products->count();
+        if($data){
+            return $data;
+        }
+        return 0;
+    }
     public function carts(){
         return $this->hasMany(Cart::class)->whereNotNull('order_id');
     }

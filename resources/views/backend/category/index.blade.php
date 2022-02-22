@@ -15,95 +15,82 @@
     <div class="card-body">
       <div class="table-responsive">
         @if(count($categories)>0)
-        <table class="table table-bordered" id="banner-dataTable" width="100%" cellspacing="0">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Titre</th>
-              <th>Slug</th>
-              <th>Est Parent</th>
-              <th>Categorie</th>
-              <th>Photo</th>
-              <th>Status</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tfoot>
-            <tr>
-              <th>#</th>
-              <th>Titre</th>
-              <th>Slug</th>
-              <th>Est Parent</th>
-              <th>Categorie</th>
-              <th>Photo</th>
-              <th>Status</th>
-              <th>Action</th>
-            </tr>
-          </tfoot>
-          <tbody>
-
-            @foreach($categories as $key => $category)
-              @php
-              $parent_cats=DB::table('categories')->select('title')->where('id',$category->parent_id)->get();
-              // dd($parent_cats);
-              @endphp
+            <table class="table table-bordered" id="banner-dataTable" width="100%" cellspacing="0">
+            <thead>
                 <tr>
-                    <td>{{$key +1}}</td>
-                    <td>{{$category->title}}</td>
-                    <td>{{$category->slug}}</td>
-                    <td>{{(($category->is_parent==1)? 'Yes': 'No')}}</td>
-                    <td>
-                        @foreach($parent_cats as $parent_cat)
-                            {{$parent_cat->title}}
-                        @endforeach
-                    </td>
-                    <td>
-                        @if($category->photo)
-                            <img src="{{$category->photo}}" class="img-fluid" style="max-width:80px" alt="{{$category->photo}}">
-                        @else
-                            <img src="{{asset('backend/img/thumbnail-default.jpg')}}" class="img-fluid" style="max-width:80px" alt="avatar.png">
-                        @endif
-                    </td>
-                    <td>
-                        @if($category->status=='active')
-                            <span class="badge badge-success">{{$category->status}}</span>
-                        @else
-                            <span class="badge badge-warning">{{$category->status}}</span>
-                        @endif
-                    </td>
-                    <td>
-                        <a href="{{route('category.edit',$category->id)}}" class="btn btn-primary btn-sm float-left mr-1" style="height:30px; width:30px;border-radius:50%" data-toggle="tooltip" title="edit" data-placement="bottom"><i class="fas fa-edit"></i></a>
-                    <form method="POST" action="{{route('category.destroy',[$category->id])}}">
-                      @csrf
-                      @method('delete')
-                          <button class="btn btn-danger btn-sm dltBtn" data-id={{$category->id}} style="height:30px; width:30px;border-radius:50%" data-toggle="tooltip" data-placement="bottom" title="Delete"><i class="fas fa-trash-alt"></i></button>
-                        </form>
-                    </td>
-                    {{-- Delete Modal --}}
-                    {{-- <div class="modal fade" id="delModal{{$user->id}}" tabindex="-1" role="dialog" aria-labelledby="#delModal{{$user->id}}Label" aria-hidden="true">
-                        <div class="modal-dialog" role="document">
-                          <div class="modal-content">
-                            <div class="modal-header">
-                              <h5 class="modal-title" id="#delModal{{$user->id}}Label">Delete user</h5>
-                              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                              </button>
-                            </div>
-                            <div class="modal-body">
-                              <form method="post" action="{{ route('categorys.destroy',$user->id) }}">
-                                @csrf
-                                @method('delete')
-                                <button type="submit" class="btn btn-danger" style="margin:auto; text-align:center">Parmanent delete user</button>
-                              </form>
-                            </div>
-                          </div>
-                        </div>
-                    </div> --}}
+                    <th>#</th>
+                    <th>Titre</th>
+                    <th>Photo</th>
+                    <th>Status</th>
+                    <th>Action</th>
                 </tr>
-            @endforeach
-          </tbody>
-        </table>
-        <span style="float:right">{{$categories->links()}}</span>
+            </thead>
+            <tfoot>
+                <tr>
+                    <th>#</th>
+                    <th>Titre</th>
+                    <th>Photo</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </tfoot>
+            <tbody>
+
+                @foreach($categories as $key => $category)
+                @php
+                $parent_cats=DB::table('categories')->select('title')->where('id',$category->parent_id)->get();
+                // dd($parent_cats);
+                @endphp
+                    <tr>
+                        <td>{{$key +1}}</td>
+                        <td>{{$category->title}}</td>
+                        <td>
+                            @if($category->photo)
+                                <img src="{{$category->photo}}" class="img-fluid" style="max-width:80px" alt="{{$category->photo}}">
+                            @else
+                                <img src="{{asset('backend/img/thumbnail-default.jpg')}}" class="img-fluid" style="max-width:80px" alt="avatar.png">
+                            @endif
+                        </td>
+                        <td>
+                            @if($category->status=='active')
+                                <span class="badge badge-success">{{$category->status}}</span>
+                            @else
+                                <span class="badge badge-warning">{{$category->status}}</span>
+                            @endif
+                        </td>
+                        <td>
+                            <a href="{{route('category.edit',$category->id)}}" class="btn btn-primary btn-sm float-left mr-1" style="height:30px; width:30px;border-radius:50%" data-toggle="tooltip" title="edit" data-placement="bottom"><i class="fas fa-edit"></i></a>
+                        <form method="POST" action="{{route('category.destroy',[$category->id])}}">
+                        @csrf
+                        @method('delete')
+                            <button class="btn btn-danger btn-sm dltBtn" data-id={{$category->id}} style="height:30px; width:30px;border-radius:50%" data-toggle="tooltip" data-placement="bottom" title="Delete"><i class="fas fa-trash-alt"></i></button>
+                            </form>
+                        </td>
+                        {{-- Delete Modal --}}
+                        {{-- <div class="modal fade" id="delModal{{$user->id}}" tabindex="-1" role="dialog" aria-labelledby="#delModal{{$user->id}}Label" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                <h5 class="modal-title" id="#delModal{{$user->id}}Label">Delete user</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                                </div>
+                                <div class="modal-body">
+                                <form method="post" action="{{ route('categorys.destroy',$user->id) }}">
+                                    @csrf
+                                    @method('delete')
+                                    <button type="submit" class="btn btn-danger" style="margin:auto; text-align:center">Parmanent delete user</button>
+                                </form>
+                                </div>
+                            </div>
+                            </div>
+                        </div> --}}
+                    </tr>
+                @endforeach
+            </tbody>
+            </table>
+            <span style="float:right">{{$categories->links()}}</span>
         @else
           <h6 class="text-center">Aucune catégorie trouvée !!! Veuillez créer une catégorie</h6>
         @endif

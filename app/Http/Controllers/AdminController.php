@@ -11,6 +11,10 @@ use Carbon\Carbon;
 use Spatie\Activitylog\Models\Activity;
 class AdminController extends Controller
 {
+        function __construct()
+    {
+        $this->middleware('role:admin', ['only' => ['settings']]);
+    }
     public function index(){
         $data = User::select(\DB::raw("COUNT(*) as count"), \DB::raw("DAYNAME(created_at) as day_name"), \DB::raw("DAY(created_at) as day"))
         ->where('created_at', '>', Carbon::today()->subDay(6))
@@ -38,10 +42,10 @@ class AdminController extends Controller
         $data=$request->all();
         $status=$user->fill($data)->save();
         if($status){
-            request()->session()->flash('success','Successfully updated your profile');
+            request()->session()->flash('success','votre profil a été mis à jour avec succès');
         }
         else{
-            request()->session()->flash('error','Please try again!');
+            request()->session()->flash('error','Veuillez réessayer!');
         }
         return redirect()->back();
     }
@@ -68,10 +72,10 @@ class AdminController extends Controller
         // return $settings;
         $status=$settings->fill($data)->save();
         if($status){
-            request()->session()->flash('success','Setting successfully updated');
+            request()->session()->flash('success','Paramètre mis à jour avec succès');
         }
         else{
-            request()->session()->flash('error','Please try again');
+            request()->session()->flash('error','Veuillez réessayer');
         }
         return redirect()->route('admin');
     }
@@ -86,10 +90,10 @@ class AdminController extends Controller
             'new_password' => ['required'],
             'new_confirm_password' => ['same:new_password'],
         ]);
-   
+
         User::find(auth()->user()->id)->update(['password'=> Hash::make($request->new_password)]);
-   
-        return redirect()->route('admin')->with('success','Password successfully changed');
+
+        return redirect()->route('admin')->with('success','Mot de passe changé avec succès');
     }
 
     // Pie chart

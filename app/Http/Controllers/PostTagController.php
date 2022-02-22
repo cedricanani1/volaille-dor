@@ -52,7 +52,7 @@ class PostTagController extends Controller
             request()->session()->flash('success','Post Tag Successfully added');
         }
         else{
-            request()->session()->flash('error','Please try again!!');
+            request()->session()->flash('error','Veuillez réessayer!!');
         }
         return redirect()->route('post-tag.index');
     }
@@ -101,7 +101,7 @@ class PostTagController extends Controller
             request()->session()->flash('success','Post Tag Successfully updated');
         }
         else{
-            request()->session()->flash('error','Please try again!!');
+            request()->session()->flash('error','Veuillez réessayer!!');
         }
         return redirect()->route('post-tag.index');
     }
@@ -115,9 +115,9 @@ class PostTagController extends Controller
     public function destroy($id)
     {
         $postTag=PostTag::findOrFail($id);
-       
+
         $status=$postTag->delete();
-        
+
         if($status){
             request()->session()->flash('success','Post Tag successfully deleted');
         }

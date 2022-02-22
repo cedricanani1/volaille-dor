@@ -1,5 +1,4 @@
 @extends('backend.layouts.master')
-
 @section('main-content')
  <!-- DataTales Example -->
  <div class="card shadow mb-4">
@@ -52,8 +51,8 @@
                     <td>{{$order->first_name}} {{$order->last_name}}</td>
                     <td>{{$order->email}}</td>
                     <td>{{$order->quantity}}</td>
-                    <td>@foreach($shipping_charge as $data)  {{number_format($data,2)}} Fcfa @endforeach</td>
-                    <td>{{number_format($order->total_amount,2)}} Fcfa</td>
+                    <td>@foreach($shipping_charge as $data)  {{number_format($data,0)}} Fcfa @endforeach</td>
+                    <td>{{number_format($order->sub_total,0)}} Fcfa</td>
                     <td>
                         @if($order->status=='new')
                           <span class="badge badge-primary">{{$order->status}}</span>

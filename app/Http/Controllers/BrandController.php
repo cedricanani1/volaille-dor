@@ -52,7 +52,7 @@ class BrandController extends Controller
             request()->session()->flash('success','Brand successfully created');
         }
         else{
-            request()->session()->flash('error','Error, Please try again');
+            request()->session()->flash('error','Error, Veuillez réessayer');
         }
         return redirect()->route('brand.index');
     }
@@ -104,7 +104,7 @@ class BrandController extends Controller
             request()->session()->flash('success','Brand successfully updated');
         }
         else{
-            request()->session()->flash('error','Error, Please try again');
+            request()->session()->flash('error','Error, Veuillez réessayer');
         }
         return redirect()->route('brand.index');
     }
@@ -124,7 +124,7 @@ class BrandController extends Controller
                 request()->session()->flash('success','Brand successfully deleted');
             }
             else{
-                request()->session()->flash('error','Error, Please try again');
+                request()->session()->flash('error','Error, Veuillez réessayer');
             }
             return redirect()->route('brand.index');
         }

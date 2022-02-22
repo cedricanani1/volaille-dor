@@ -48,7 +48,7 @@ class CouponController extends Controller
             request()->session()->flash('success','Coupon Successfully added');
         }
         else{
-            request()->session()->flash('error','Please try again!!');
+            request()->session()->flash('error','Veuillez réessayer!!');
         }
         return redirect()->route('coupon.index');
     }
@@ -97,16 +97,16 @@ class CouponController extends Controller
             'status'=>'required|in:active,inactive'
         ]);
         $data=$request->all();
-        
+
         $status=$coupon->fill($data)->save();
         if($status){
             request()->session()->flash('success','Coupon Successfully updated');
         }
         else{
-            request()->session()->flash('error','Please try again!!');
+            request()->session()->flash('error','Veuillez réessayer!!');
         }
         return redirect()->route('coupon.index');
-        
+
     }
 
     /**
@@ -124,7 +124,7 @@ class CouponController extends Controller
                 request()->session()->flash('success','Coupon successfully deleted');
             }
             else{
-                request()->session()->flash('error','Error, Please try again');
+                request()->session()->flash('error','Error, Veuillez réessayer');
             }
             return redirect()->route('coupon.index');
         }
@@ -139,7 +139,7 @@ class CouponController extends Controller
         $coupon=Coupon::where('code',$request->code)->first();
         // dd($coupon);
         if(!$coupon){
-            request()->session()->flash('error','Invalid coupon code, Please try again');
+            request()->session()->flash('error','Invalid coupon code, Veuillez réessayer');
             return back();
         }
         if($coupon){

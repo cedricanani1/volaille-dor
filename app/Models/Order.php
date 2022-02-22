@@ -2,6 +2,7 @@
 
 namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 class Order extends Model
 {
@@ -15,6 +16,18 @@ class Order extends Model
     }
     public static function countActiveOrder(){
         $data=Order::count();
+        if($data){
+            return $data;
+        }
+        return 0;
+    }
+    public static function countGerantOrder(){
+            $boutiqueId = Auth::user()->boutique->last()->zone;
+            $shippingId=[];
+            foreach ($boutiqueId as $key => $value) {
+                array_push($shippingId,$value->id);
+            }
+            $data = Order::whereIn('shipping_id',$shippingId)->orderBy('id','DESC')->count();
         if($data){
             return $data;
         }

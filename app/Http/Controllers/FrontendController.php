@@ -388,7 +388,7 @@ class FrontendController extends Controller
             return redirect()->route('home');
         }
         else{
-            request()->session()->flash('error','Please try again!');
+            request()->session()->flash('error','Veuillez réessayer!');
             return back();
         }
     }
@@ -414,7 +414,7 @@ class FrontendController extends Controller
                 }
                 else{
                     Newsletter::getLastError();
-                    return back()->with('error','Something went wrong! please try again');
+                    return back()->with('error','Something went wrong! Veuillez réessayer');
                 }
             }
             else{

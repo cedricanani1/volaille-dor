@@ -48,7 +48,7 @@ class HomeController extends Controller
             request()->session()->flash('success','Successfully updated your profile');
         }
         else{
-            request()->session()->flash('error','Please try again!');
+            request()->session()->flash('error','Veuillez réessayer!');
         }
         return redirect()->back();
     }
@@ -118,7 +118,7 @@ class HomeController extends Controller
                 request()->session()->flash('success','Review Successfully updated');
             }
             else{
-                request()->session()->flash('error','Something went wrong! Please try again!!');
+                request()->session()->flash('error','Something went wrong! Veuillez réessayer!!');
             }
         }
         else{
@@ -160,7 +160,7 @@ class HomeController extends Controller
                 request()->session()->flash('success','Post Comment successfully deleted');
             }
             else{
-                request()->session()->flash('error','Error occurred please try again');
+                request()->session()->flash('error','Erreur est survenue Veuillez réessayer');
             }
             return back();
         }
@@ -199,7 +199,7 @@ class HomeController extends Controller
                 request()->session()->flash('success','Comment successfully updated');
             }
             else{
-                request()->session()->flash('error','Something went wrong! Please try again!!');
+                request()->session()->flash('error','Something went wrong! Veuillez réessayer!!');
             }
             return redirect()->route('user.post-comment.index');
         }
@@ -220,11 +220,11 @@ class HomeController extends Controller
             'new_password' => ['required'],
             'new_confirm_password' => ['same:new_password'],
         ]);
-   
+
         User::find(auth()->user()->id)->update(['password'=> Hash::make($request->new_password)]);
-   
-        return redirect()->route('user')->with('success','Password successfully changed');
+
+        return redirect()->route('user')->with('success','Mot de passe changé avec succès');
     }
 
-    
+
 }

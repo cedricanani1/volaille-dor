@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Spatie\Permission\Models\Role;
+use Spatie\Permission\Models\Permission;
 use App\User;
 class UsersController extends Controller
 {
@@ -41,7 +43,7 @@ class UsersController extends Controller
             'name'=>'string|required|max:30',
             'email'=>'string|required|unique:users',
             'password'=>'string|required',
-            'role'=>'required|in:admin,user',
+            'role'=>'required|in:admin,user,manager,gerant(e)',
             'status'=>'required|in:active,inactive',
             'photo'=>'nullable|string',
         ]);
@@ -49,13 +51,14 @@ class UsersController extends Controller
         $data=$request->all();
         $data['password']=Hash::make($request->password);
         // dd($data);
-        $status=User::create($data);
+        $user=User::create($data);
+        $user->assignRole($request->role);
         // dd($status);
-        if($status){
+        if($user){
             request()->session()->flash('success','Successfully added user');
         }
         else{
-            request()->session()->flash('error','Error occurred while adding user');
+            request()->session()->flash('error','Erreur est survenue while adding user');
         }
         return redirect()->route('users.index');
 
@@ -105,8 +108,11 @@ class UsersController extends Controller
         // dd($request->all());
         $data=$request->all();
         // dd($data);
-        
+
         $status=$user->fill($data)->save();
+        // $roles = $user->getRoleNames();
+        // $user->removeRole($roles);
+        $user->assignRole($request->role);
         if($status){
             request()->session()->flash('success','Successfully updated');
         }

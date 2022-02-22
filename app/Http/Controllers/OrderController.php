@@ -2,9 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Boutique;
+use App\Models\BoutiqueProduct;
+use App\Models\BoutiqueShipping;
+use App\Models\BoutiqueUser;
 use Illuminate\Http\Request;
 use App\Models\Cart;
 use App\Models\Order;
+use App\Models\Product;
 use App\Models\Shipping;
 use App\User;
 use PDF;
@@ -12,6 +17,7 @@ use Notification;
 use Helper;
 use Illuminate\Support\Str;
 use App\Notifications\StatusNotification;
+use Illuminate\Support\Facades\Auth;
 
 class OrderController extends Controller
 {
@@ -22,8 +28,20 @@ class OrderController extends Controller
      */
     public function index()
     {
-        $orders=Order::orderBy('id','DESC')->paginate(10);
-        return view('backend.order.index')->with('orders',$orders);
+        $status = Auth::user()->hasRole('admin');
+
+        if ($status) {
+            $orders=Order::orderBy('id','DESC')->paginate(10);
+            return view('backend.order.index')->with('orders',$orders);
+        }else{
+            $boutiqueId = Auth::user()->boutique->last()->zone;
+            $shippingId=[];
+            foreach ($boutiqueId as $key => $value) {
+                array_push($shippingId,$value->id);
+            }
+            $orders = Order::whereIn('shipping_id',$shippingId)->orderBy('id','DESC')->paginate(10);
+            return view('backend.order.index')->with('orders',$orders);
+        }
     }
 
     /**
@@ -133,9 +151,23 @@ class OrderController extends Controller
         $status=$order->save();
         if($order)
         // dd($order->id);
-        $users=User::where('role','admin')->first();
+
+        $boutique = BoutiqueShipping::where('shipping_id',$request->shipping)->first();
+        if ($boutique) {
+            $user = BoutiqueUser::where('boutique_id',$boutique->boutique_id)->first();
+            if ($user) {
+                $users=User::where('role','admin')->orWhere('id',$user->user_id)->get();
+            }else{
+                $users=User::where('role','admin')->get();
+            }
+        }else{
+            $users=User::where('role','admin')->get();
+        }
+
+
+
         $details=[
-            'title'=>'New order created',
+            'title'=>'Nouvelle commande crée',
             'actionURL'=>route('order.show',$order->id),
             'fas'=>'fa-file-alt'
         ];
@@ -162,7 +194,7 @@ class OrderController extends Controller
      */
     public function show($id)
     {
-        $order=Order::find($id);
+        $order=Order::with('cart_info')->find($id);
         // dd($order);
         return view('backend.order.show')->with('order',$order);
     }
@@ -178,7 +210,60 @@ class OrderController extends Controller
         $order=Order::find($id);
         return view('backend.order.edit')->with('order',$order);
     }
+    public function orderStat()
+    {
+        $order=Order::where('status','delivered');
+        $boutiques =  Boutique::all();
 
+        return view('backend.order.statistique')->with('order',$order)->with('boutiques',$boutiques);
+    }
+    public function getStats(Request $request){
+        $rolename = Auth::user()->roles->pluck('name');
+        $roleSelect=[];
+            foreach ($rolename as $key => $value) {
+                array_push($roleSelect,$value);
+            }
+
+        if (in_array("admin", $roleSelect)) {
+            $year=\Carbon\Carbon::now()->year;
+            // dd($year);
+            $items=Order::with(['cart_info'])->whereYear('created_at',$year)->where('status','delivered')->get()
+                ->groupBy(function($d){
+                    return \Carbon\Carbon::parse($d->created_at)->locale('fr')->format('m');
+                });
+
+        }elseif (in_array("gerant(e)", $roleSelect)) {
+                $boutiqueId = Auth::user()->boutique->last()->zone;
+                $shippingId=[];
+                foreach ($boutiqueId as $key => $value) {
+                    array_push($shippingId,$value->id);
+                }
+                $year=\Carbon\Carbon::now()->year;
+                // dd($year);
+                $items=Order::with(['cart_info'])->whereIn('shipping_id',$shippingId)->whereYear('created_at',$year)->where('status','delivered')->get()
+                    ->groupBy(function($d){
+                        return \Carbon\Carbon::parse($d->created_at)->locale('fr')->format('m');
+                    });
+        }
+
+        $result=[];
+        foreach($items as $month=>$item_collections){
+            foreach($item_collections as $item){
+                $amount=$item->cart_info->sum('amount');
+                // dd($amount);
+                $m=intval($month);
+                // return $m;
+                isset($result[$m]) ? $result[$m] += $amount :$result[$m]=$amount;
+            }
+        }
+        setlocale(LC_TIME, 'fr');
+        $data=[];
+        for($i=1; $i <=12; $i++){
+            $monthName=date('F', mktime(0,0,0,$i,1));
+            $data[$monthName] = (!empty($result[$i]))? number_format((float)($result[$i]), 2, '.', '') : 0.0;
+        }
+        return $data;
+    }
     /**
      * Update the specified resource in storage.
      *
@@ -197,11 +282,50 @@ class OrderController extends Controller
         if($request->status=='delivered'){
             foreach($order->cart as $cart){
                 $product=$cart->product;
-                // return $product;
                 $product->stock -=$cart->quantity;
                 $product->save();
+
+                $boutiqueShipping =  BoutiqueShipping::where('shipping_id',$order->shipping_id)->first();
+                if ($boutiqueShipping) {
+                    $boutiqueProduct = BoutiqueProduct::where('boutique_id',$boutiqueShipping->boutique_id)
+                                                  ->where('product_id',$cart->product_id)->first();
+                    if ($boutiqueProduct) {
+                        if ($boutiqueProduct->quantity >= $cart->quantity) {
+                            $boutiqueProduct->quantity -= $cart->quantity;
+                            $boutiqueProduct->save();
+                        }
+                    }else{
+                        request()->session()->flash('error','Il n\'y a pas produit pour cette zone');
+                        return redirect()->route('order.index');
+                    }
+                }else{
+                    request()->session()->flash('error','Il n\'y a pas de boutique dans cette zone');
+                    return redirect()->route('order.index');
+                }
+
+
+
+
+                if ($boutiqueProduct->quantity < 15) {
+                    $globalUpdate = Product::findOrFail($cart->product_id);
+                    $boutique = Boutique::findOrFail($boutiqueShipping->boutique_id);
+                    $user = BoutiqueUser::where('boutique_id',$boutiqueProduct->boutique_id)->first();
+                    if ($user) {
+                        $users=User::where('role','admin')->orWhere('id',$user->user_id)->get();
+                    }else{
+                        $users=User::where('role','admin')->get();
+                    }
+
+                    $details=[
+                        'title'=>' Attention !!! Le Stock de '.$globalUpdate->title.' pour la Boutique '.$boutique->libelle .' est inferieur à 15 ',
+                        'actionURL'=>route('product.index'),
+                        'fas'=>'fa-file-alt'
+                    ];
+                    Notification::send($users, new StatusNotification($details));
+                }
             }
         }
+
         $status=$order->fill($data)->save();
         if($status){
             request()->session()->flash('success','Commande mise à jour avec succès');
@@ -284,13 +408,32 @@ class OrderController extends Controller
     }
     // Income chart
     public function incomeChart(Request $request){
-        $year=\Carbon\Carbon::now()->year;
-        // dd($year);
-        $items=Order::with(['cart_info'])->whereYear('created_at',$year)->where('status','delivered')->get()
-            ->groupBy(function($d){
-                return \Carbon\Carbon::parse($d->created_at)->format('m');
-            });
-            // dd($items);
+        $rolename = Auth::user()->roles->pluck('name');
+        $roleSelect=[];
+            foreach ($rolename as $key => $value) {
+                array_push($roleSelect,$value);
+            }
+        if (in_array("admin", $roleSelect)) {
+            $year=\Carbon\Carbon::now()->year;
+            // dd($year);
+            $items=Order::with(['cart_info'])->whereYear('created_at',$year)->where('status','delivered')->get()
+                ->groupBy(function($d){
+                    return \Carbon\Carbon::parse($d->created_at)->locale('fr')->format('m');
+                });
+        }elseif (in_array("gerant(e)", $roleSelect)) {
+                $boutiqueId = Auth::user()->boutique->last()->zone;
+                $shippingId=[];
+                foreach ($boutiqueId as $key => $value) {
+                    array_push($shippingId,$value->id);
+                }
+                $year=\Carbon\Carbon::now()->year;
+                // dd($year);
+                $items=Order::with(['cart_info'])->whereIn('shipping_id',$shippingId)->whereYear('created_at',$year)->where('status','delivered')->get()
+                    ->groupBy(function($d){
+                        return \Carbon\Carbon::parse($d->created_at)->locale('fr')->format('m');
+                    });
+        }
+
         $result=[];
         foreach($items as $month=>$item_collections){
             foreach($item_collections as $item){
@@ -301,6 +444,7 @@ class OrderController extends Controller
                 isset($result[$m]) ? $result[$m] += $amount :$result[$m]=$amount;
             }
         }
+        setlocale(LC_TIME, 'fr');
         $data=[];
         for($i=1; $i <=12; $i++){
             $monthName=date('F', mktime(0,0,0,$i,1));

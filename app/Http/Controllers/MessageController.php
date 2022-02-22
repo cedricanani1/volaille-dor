@@ -121,7 +121,7 @@ class MessageController extends Controller
             request()->session()->flash('success','Successfully deleted message');
         }
         else{
-            request()->session()->flash('error','Error occurred please try again');
+            request()->session()->flash('error','Erreur est survenue Veuillez réessayer');
         }
         return back();
     }

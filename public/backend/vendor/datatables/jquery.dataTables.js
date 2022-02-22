@@ -1091,7 +1091,7 @@
 						_fnInitialise( oSettings );
 					},
 					error: function () {
-						// Error occurred loading language file, continue on as best we can
+						// Erreur est survenue loading language file, continue on as best we can
 						_fnInitialise( oSettings );
 					}
 				} );

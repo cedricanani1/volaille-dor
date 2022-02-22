@@ -7,6 +7,7 @@
     <h5 class="card-header">Commande<a href="{{route('order.pdf',$order->id)}}" class=" btn btn-sm btn-primary shadow-sm float-right"><i class="fas fa-download fa-sm text-white-50"></i> Generer PDF</a>
   </h5>
   <div class="card-body">
+    {{-- {{dd($order)}} --}}
     @if($order)
     <table class="table table-striped table-hover">
       @php
@@ -32,8 +33,8 @@
             <td>{{$order->first_name}} {{$order->last_name}}</td>
             <td>{{$order->email}}</td>
             <td>{{$order->quantity}}</td>
-            <td>@foreach($shipping_charge as $data) $ {{number_format($data,2)}} @endforeach</td>
-            <td>{{number_format($order->total_amount,2)}} Fcfa</td>
+            <td>@foreach($shipping_charge as $data) {{number_format($data,0)}} Fcfa @endforeach</td>
+            <td>{{number_format($order->sub_total,0)}} Fcfa</td>
             <td>
                 @if($order->status=='new')
                   <span class="badge badge-primary">{{$order->status}}</span>
@@ -57,9 +58,8 @@
         </tr>
       </tbody>
     </table>
-
     <section class="confirmation_part section_padding">
-      <div class="order_boxes">
+        <div class="order_boxes">
         <div class="row">
           <div class="col-lg-6 col-lx-4">
             <div class="order-info">
@@ -82,19 +82,16 @@
                         <td> : {{$order->status}}</td>
                     </tr>
                     <tr>
-                      @php
-                          $shipping_charge=DB::table('shippings')->where('id',$order->shipping_id)->pluck('price');
-                      @endphp
-                        <td>Frais d'expédition</td>
-                        {{-- <td> : $ {{number_format($shipping_charge[0],2)}}</td> --}}
+
+
                     </tr>
                     <tr>
                       <td>Coupon</td>
-                      <td> : {{number_format($order->coupon,2)}}  Fcfa</td>
+                      <td> : {{number_format($order->coupon,0)}}  Fcfa</td>
                     </tr>
                     <tr>
                         <td>Montant total</td>
-                        <td> : {{number_format($order->total_amount,2)}} Fcfa</td>
+                        <td> : {{number_format($order->total_amount,0)}} Fcfa</td>
                     </tr>
                     <tr>
                         <td>Mode de paiement</td>
@@ -135,11 +132,44 @@
                         <td>Post Code</td>
                         <td> : {{$order->post_code}}</td>
                     </tr>
+                    @php
+                        $shipping_charge=DB::table('shippings')->where('id',$order->shipping_id)->pluck('price');
+                    @endphp
+                    @if ($order->shipping_id)
+                    <td>Frais d'expédition</td>
+                    <td> : {{number_format($shipping_charge[0],0)}} Fcfa</td>
+                    @endif
               </table>
             </div>
           </div>
         </div>
-      </div>
+        </div>
+        <br>
+        <table class="table table-bordered" id="order-dataTable" width="100%" cellspacing="0">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Produit</th>
+                <th>Prix</th>
+                <th>Quantité</th>
+                <th>Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              @foreach($order->cart_info as $key => $cart)
+                @php
+                    $product=DB::table('products')->where('id',$cart->product_id)->first();
+                @endphp
+                  <tr>
+                        <td>{{$key + 1}}</td>
+                        <td>{{$product->title}}</td>
+                        <td>{{$cart->price}}</td>
+                        <td>{{$cart->quantity}}</td>
+                        <td>{{$cart->price * $cart->quantity}}</td>
+                  </tr>
+              @endforeach
+            </tbody>
+          </table>
     </section>
     @endif
 

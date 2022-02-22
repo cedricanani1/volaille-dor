@@ -80,7 +80,7 @@ class PostController extends Controller
             request()->session()->flash('success','Post Successfully added');
         }
         else{
-            request()->session()->flash('error','Please try again!!');
+            request()->session()->flash('error','Veuillez réessayer!!');
         }
         return redirect()->route('post.index');
     }
@@ -150,7 +150,7 @@ class PostController extends Controller
             request()->session()->flash('success','Post Successfully updated');
         }
         else{
-            request()->session()->flash('error','Please try again!!');
+            request()->session()->flash('error','Veuillez réessayer!!');
         }
         return redirect()->route('post.index');
     }
@@ -164,9 +164,9 @@ class PostController extends Controller
     public function destroy($id)
     {
         $post=Post::findOrFail($id);
-       
+
         $status=$post->delete();
-        
+
         if($status){
             request()->session()->flash('success','Post successfully deleted');
         }

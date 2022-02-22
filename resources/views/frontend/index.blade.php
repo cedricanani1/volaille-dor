@@ -77,7 +77,7 @@
                                 @if($cat->photo)
                                     <img src="{{$cat->photo}}" alt="{{$cat->photo}}">
                                 @else
-                                    <img src="https://via.placeholder.com/600x370" alt="#">
+                                    {{-- <img src="https://via.placeholder.com/600x370" alt="#"> --}}
                                 @endif
                                 <div class="content">
                                     <h3>{{$cat->title}}</h3>
@@ -152,7 +152,6 @@
                                                     <span class="price-dec">{{$product->discount}}% Off</span>
                                                 @endif
 
-
                                             </a>
                                             <div class="button-head">
                                                 <div class="product-action">
@@ -170,8 +169,8 @@
                                                 @php
                                                     $after_discount=($product->price-($product->price*$product->discount)/100);
                                                 @endphp
-                                                <span>${{number_format($after_discount,2)}}</span>
-                                                <del style="padding-left:4%;">${{number_format($product->price,2)}}</del>
+                                                <span>{{number_format($after_discount,0)}} Fcfa</span>
+                                                <del style="padding-left:4%;">{{number_format($product->price,0)}} Fcfa</del>
                                             </div>
                                         </div>
                                     </div>
@@ -261,11 +260,11 @@
                             <div class="product-content">
                                 <h3><a href="{{route('product-detail',$product->slug)}}">{{$product->title}}</a></h3>
                                 <div class="product-price">
-                                    <span class="old">{{number_format($product->price,2)}} Fcfa</span>
+                                    <span class="old">{{number_format($product->price,0)}} Fcfa</span>
                                     @php
                                     $after_discount=($product->price-($product->price*$product->discount)/100)
                                     @endphp
-                                    <span>{{number_format($after_discount,2)}} Fcfa</span>
+                                    <span>{{number_format($after_discount,0)}} Fcfa</span>
                                 </div>
                             </div>
                         </div>
@@ -313,7 +312,7 @@
                                 <div class="col-lg-6 col-md-6 col-12 no-padding">
                                     <div class="content">
                                         <h4 class="title"><a href="#">{{$product->title}}</a></h4>
-                                        <p class="price with-discount">{{number_format($product->discount,2)}} Fcfa</p>
+                                        <p class="price with-discount">{{number_format($product->price-($product->price*$product->discount)/100,0)}} Fcfa</p>
                                     </div>
                                 </div>
                                 </div>
@@ -366,7 +365,7 @@
     <!-- /End Cowndown Area -->
 @endforeach --}}
 <!-- Start Shop Blog  -->
-<section class="shop-blog section">
+{{-- <section class="shop-blog section">
     <div class="container">
         <div class="row">
             <div class="col-12">
@@ -379,7 +378,6 @@
             @if($posts)
                 @foreach($posts as $post)
                     <div class="col-lg-4 col-md-6 col-12">
-                        <!-- Start Single Blog  -->
                         <div class="shop-single-blog">
                             <img src="{{$post->photo}}" alt="{{$post->photo}}">
                             <div class="content">
@@ -388,14 +386,13 @@
                                 <a href="{{route('blog.detail',$post->slug)}}" class="more-btn">Continuer la lecture</a>
                             </div>
                         </div>
-                        <!-- End Single Blog  -->
                     </div>
                 @endforeach
             @endif
 
         </div>
     </div>
-</section>
+</section> --}}
 <!-- End Shop Blog  -->
 
 <!-- Start Shop Services Area -->
@@ -443,7 +440,7 @@
 </section>
 <!-- End Shop Services Area -->
 
-@include('frontend.layouts.newsletter')
+{{-- @include('frontend.layouts.newsletter') --}}
 
 <!-- Modal -->
 @if($product_lists)
@@ -509,7 +506,7 @@
                                         @php
                                             $after_discount=($product->price-($product->price*$product->discount)/100);
                                         @endphp
-                                        <h3><small><del class="text-muted">${{number_format($product->price,2)}}</del></small>    ${{number_format($after_discount,2)}}  </h3>
+                                        <h3><small><del class="text-muted">{{number_format($product->price,0)}}Fcfa</del></small>{{number_format($after_discount,0)}}  Fcfa </h3>
                                         <div class="quickview-peragraph">
                                             <p>{!! html_entity_decode($product->summary) !!}</p>
                                         </div>
@@ -586,12 +583,12 @@
     <style>
         /* Banner Sliding */
         #Gslider .carousel-inner {
-        background: #000000;
-        color:black;
+            background: #000000;
+            color:black;
         }
 
         #Gslider .carousel-inner{
-        height: 550px;
+            height: 550px;
         }
         #Gslider .carousel-inner img{
             width: 100% !important;
@@ -599,24 +596,24 @@
         }
 
         #Gslider .carousel-inner .carousel-caption {
-        bottom: 60%;
+            bottom: 60%;
         }
 
         #Gslider .carousel-inner .carousel-caption h1 {
-        font-size: 50px;
-        font-weight: bold;
-        line-height: 100%;
-        color: #F7941D;
+            font-size: 50px;
+            font-weight: bold;
+            line-height: 100%;
+            color: #F7941D;
         }
 
         #Gslider .carousel-inner .carousel-caption p {
-        font-size: 18px;
-        color: black;
-        margin: 28px 0 28px 0;
+            font-size: 18px;
+            color: black;
+            margin: 28px 0 28px 0;
         }
 
         #Gslider .carousel-indicators {
-        bottom: 70px;
+            bottom: 70px;
         }
     </style>
 @endpush
